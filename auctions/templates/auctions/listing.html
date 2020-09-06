@@ -1,0 +1,84 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+<div class="container listing-page">
+    <div class="listing-heading">
+        <h2>{{listing.title}}</h2>
+        <div>
+            {% if not listing.active %}
+            <i>(Closed listing)</i>
+            {% endif %}
+        </div>
+        {% if user.is_authenticated %}
+        {% if is_winner %}
+        <i>You have won this item</i>
+        {% endif %}
+        {% if in_watchlist %}
+            <form action="{% url 'listing' listing.id %}" method="post">
+                {% csrf_token %}
+                <input type="submit" name="delete_watchlist" value="Remove from watchlist">
+            </form>   
+        {% else %} 
+            <form action="{% url 'listing' listing.id %}" method="post">
+                {% csrf_token %}
+                <input type="submit" name="insert_watchlist" value="Add to watchlist">
+            </form>
+        {% endif %}
+        {% if is_owner %}
+        {% if listing.active %}
+        <form action="{% url 'listing' listing.id %}" method="post">
+            {% csrf_token %}
+            <input type="submit" name="close_listing" value="Close the listing">
+        </form>
+        {% endif %}
+        {% endif %}
+        {% endif %}
+    </div>
+    <img src="{{listing.image_url}}">
+    <div>
+        <div class="listing-description">
+            <span>Description: </span>
+            <span>{{listing.description}}</span>
+        </div>
+        <div class="listing-description">
+            <span>Current bid/price: </span>
+            <span>{{listing.current_price}}</span>
+            {% if user.is_authenticated %}
+            {% if not is_owner %}
+            <form action="{% url 'listing' listing.id %}" method="post">
+                {% csrf_token %}
+                <input type="number" name="bid">
+                <input type="submit" value="Place a bid">
+            </form>
+            {% endif %}
+            {% endif %}
+        </div>
+        <div class="listing-description">
+            <span>Posted by: </span>
+            <span>{{ listing.owner }}</span>
+        </div>
+    </div>
+    {% if user.is_authenticated %}
+        <form action="{% url 'listing' listing.id %}" method="post">
+            <div class="comment-form">
+                {% csrf_token %}
+                {{commentform}}
+                <input type="submit" value="Post comment">
+            </div>
+        </form>
+    {% endif %}
+    {% for comment in comments %}
+    <div class="comment-container">
+        <div class="comment-content">
+            <p>{{comment.content}}</p>
+        </div>
+        <div class="comment-signature">
+            <span>{{comment.user.username}}</span>
+            <i>{{comment.date}}</i>
+        </div>
+    </div>
+    {% endfor %}
+    
+</div>
+
+{% endblock %}

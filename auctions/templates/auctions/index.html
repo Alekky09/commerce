@@ -1,0 +1,22 @@
+{% extends "auctions/layout.html" %}
+{% block title %}Active Listings{% endblock %}
+{% block body %}
+        <h5 class="heading">{{heading}}</h5>
+        {% for listing in listings %}
+        <div class="listing-item">
+            <img src="{{listing.image_url}}">
+            <div class="listing-item-title">
+                <a href="{% url 'listing' listing.id %}"><h4>{{listing.title}}</h4></a>
+                {% if not listing.active %}
+                    <i>Closed listing</i>
+                {% endif %}
+            </div>
+            <div class="listing-item-desc-div">
+                <span class="listing-item-desc">Description:</span><span>{{listing.description}}</span>
+            </div>
+            <div class="listing-item-desc-div">
+                <span class="listing-item-desc">Current Price:</span><span>{{listing.current_price}}</span>
+            </div>
+        </div>
+        {% endfor %}
+{% endblock %}
